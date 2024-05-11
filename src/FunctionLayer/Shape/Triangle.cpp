@@ -71,6 +71,37 @@ TriangleMesh::TriangleMesh(const Json &json) : Shape(json) {
   meshData = MeshData::loadFromFile(filepath);
 }
 
+float TriangleMesh::getArea() const {
+  float area = 0.f;
+  for (int i = 0; i < meshData->faceCount; ++i) {
+    auto faceInfo = meshData->faceBuffer[i];
+    // 转到世界尺度保证缩放合适
+    Point3f vtx0 = transform.toWorld(meshData->vertexBuffer[faceInfo[0].vertexIndex]),
+            vtx1 = transform.toWorld(meshData->vertexBuffer[faceInfo[1].vertexIndex]),
+            vtx2 = transform.toWorld(meshData->vertexBuffer[faceInfo[2].vertexIndex]);
+    area += cross(vtx1 - vtx0, vtx2 - vtx0).length() / 2.f;
+  }
+  return area;
+}
+
+std::vector<float> TriangleMesh::getArea(int t) const { // 在内存没问题的时候是不是这个完全可以替代上述函数了
+  std::vector<float> cu_areas(meshData->faceCount, .0f); // cumulative areas，单调递增的面积序列
+  for (int i = 0; i < meshData->faceCount; ++i) {
+    auto faceInfo = meshData->faceBuffer[i];
+    // 转到世界尺度保证缩放合适
+    Point3f vtx0 = transform.toWorld(meshData->vertexBuffer[faceInfo[0].vertexIndex]),
+            vtx1 = transform.toWorld(meshData->vertexBuffer[faceInfo[1].vertexIndex]),
+            vtx2 = transform.toWorld(meshData->vertexBuffer[faceInfo[2].vertexIndex]);
+    if (i == 0) {
+      cu_areas[i] = cross(vtx1 - vtx0, vtx2 - vtx0).length() / 2.f;
+      continue;
+    } else {
+      cu_areas[i] = cu_areas[i - 1] + cross(vtx1 - vtx0, vtx2 - vtx0).length() / 2.f;
+    }
+  }
+  return cu_areas;
+}
+
 RTCGeometry TriangleMesh::getEmbreeGeometry(RTCDevice device) const {
   RTCGeometry geometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 

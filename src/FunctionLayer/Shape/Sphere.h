@@ -16,6 +16,15 @@ public:
                                       Intersection *intersection,
                                       float *pdf) const override {
     // TODO finish this
+    float phi = 2 * PI * sample[0];
+    float theta = acos(1 - 2 * sample[1]);
+
+    intersection->position = center + radius * Vector3f{sin(theta) * cos(phi),
+                                                        sin(theta) * sin(phi),
+                                                        cos(theta)};
+    intersection->normal = normalize(intersection->position - center);
+
+    *pdf = 1.f / (4 * PI * radius * radius);
     return;
   }
 

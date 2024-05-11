@@ -10,11 +10,13 @@
 class Light;
 class Material;
 
-class Shape : public Transformable {
+class Shape : public Transformable { // 所有shape都有transform，可以进行平移、旋转、变到世界坐标系等操作
 public:
   Shape() = default;
 
   Shape(const Json &json);
+
+  virtual float getArea() const {return 0.0f;}
 
   virtual RTCGeometry getEmbreeGeometry(RTCDevice device) const;
 

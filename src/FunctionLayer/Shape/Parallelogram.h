@@ -7,6 +7,8 @@ public:
   Parallelogram() = delete;
 
   Parallelogram(const Json &json);
+  
+  virtual float getArea() const override;
 
   virtual bool rayIntersectShape(Ray &ray, int *primID, float *u,
                                  float *v) const override;

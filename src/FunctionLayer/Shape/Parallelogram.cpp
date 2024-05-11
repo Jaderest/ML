@@ -21,6 +21,10 @@ Parallelogram::Parallelogram(const Json &json) : Shape(json) {
   }
 }
 
+float Parallelogram::getArea() const {
+  return cross(edge0, edge1).length();
+}
+
 bool Parallelogram::rayIntersectShape(Ray &ray, int *primID, float *u,
                                       float *v) const {
   Point3f origin = ray.origin;

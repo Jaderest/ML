@@ -1,6 +1,6 @@
 {
   "output" : {
-    "filename" : "test2.hdr"
+    "filename" : "area-lights.hdr"
   },
   "sampler" : {
     "type" : "independent",

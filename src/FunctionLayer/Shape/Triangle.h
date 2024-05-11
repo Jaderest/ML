@@ -37,6 +37,10 @@ public:
 
   TriangleMesh(const Json &json);
 
+  virtual float getArea() const override;
+
+  std::vector<float> getArea(int numSamples) const;
+
   //* 当使用embree时，我们使用embree内置的求交函数，故覆盖默认方法
   virtual RTCGeometry getEmbreeGeometry(RTCDevice device) const override;
 
@@ -49,7 +53,26 @@ public:
   virtual void uniformSampleOnSurface(Vector2f sample,
                                       Intersection *intersection,
                                       float *pdf) const override {
-    // TODO finish this
+    static std::vector<float> areas;
+    if (areas.empty()) {
+      std::vector<float> copiedAreas = getArea(1);
+      for (auto i : copiedAreas) {
+        areas.push_back(i);
+      }
+    }
+
+    // 开始加权
+    // logn的算法
+    float r = areas.back() * sample[0];
+    int primID = std::lower_bound(areas.begin(), areas.end(), r) - areas.begin();
+
+    float sqrtSample1 = std::sqrt(sample[1]);
+    float u = 1.f - sqrtSample1;
+    float v = (1.f - u) * sample[1];
+    // distance暂时不用算
+    fillIntersection(0.f, primID, u, v, intersection); //至少完成了position和normal
+    *pdf = 1 / areas.back();
+     
     return;
   }
 
