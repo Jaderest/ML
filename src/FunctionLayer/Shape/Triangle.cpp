@@ -84,7 +84,7 @@ float TriangleMesh::getArea() const {
   return area;
 }
 
-std::vector<float> TriangleMesh::getArea(int t) const { // 在内存没问题的时候是不是这个完全可以替代上述函数了
+std::vector<float> TriangleMesh::getArea(int t) const {
   std::vector<float> cu_areas(meshData->faceCount, .0f); // cumulative areas，单调递增的面积序列
   for (int i = 0; i < meshData->faceCount; ++i) {
     auto faceInfo = meshData->faceBuffer[i];
@@ -142,7 +142,7 @@ void TriangleMesh::fillIntersection(float distance, int primID, float u,
   auto faceInfo = meshData->faceBuffer[primID];
   float w = 1.f - u - v;
 
-  //* 计算交点
+  //* 计算交点。这里得到三个顶点的世界坐标系
   Point3f pw = transform.toWorld(
               meshData->vertexBuffer[faceInfo[0].vertexIndex]),
           pu = transform.toWorld(
@@ -166,10 +166,10 @@ void TriangleMesh::fillIntersection(float distance, int primID, float u,
   }
 
   //* 计算纹理坐标
+  Vector2f tw = meshData->texcodBuffer[faceInfo[0].texcodIndex],  // 得到了三个顶点的纹理坐标
+            tu = meshData->texcodBuffer[faceInfo[1].texcodIndex],
+            tv = meshData->texcodBuffer[faceInfo[2].texcodIndex];
   if (meshData->texcodBuffer.size() != 0) {
-    Vector2f tw = meshData->texcodBuffer[faceInfo[0].texcodIndex],
-             tu = meshData->texcodBuffer[faceInfo[1].texcodIndex],
-             tv = meshData->texcodBuffer[faceInfo[2].texcodIndex];
     intersection->texCoord = w * tw + u * tu + v * tv;
   } else {
     intersection->texCoord = Vector2f{.0f, .0f};
@@ -185,6 +185,35 @@ void TriangleMesh::fillIntersection(float distance, int primID, float u,
   tangent = normalize(cross(intersection->normal, bitangent));
   intersection->tangent = tangent;
   intersection->bitangent = bitangent;
+
+  // TODO 填写dpdu和dpdv
+  float A[2][2] = {
+    {tu[0] - tw[0], tu[1] - tw[1]},
+    {tv[0] - tw[0], tv[1] - tw[1]}
+  };
+  float Bx[2] = {pu[0] - pw[0], pv[0] - pw[0]};
+  float By[2] = {pu[1] - pw[1], pv[1] - pw[1]};
+  float Bz[2] = {pu[2] - pw[2], pv[2] - pw[2]};
+  auto solveLinearSystem2x2 = [](const float A[2][2], const float B[2],
+                                 float *x0, float *x1) {
+    float det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+    if (std::abs(det) < 1e-10f)
+      return false;
+    *x0 = (A[1][1] * B[0] - A[0][1] * B[1]) / det;
+    *x1 = (A[0][0] * B[1] - A[1][0] * B[0]) / det;
+    if (std::isnan(*x0) || std::isnan(*x1))
+      return false;
+    return true;
+  };
+  Vector3f dpdu, dpdv;
+  if (!solveLinearSystem2x2(A, Bx, &dpdu[0], &dpdv[0]))
+    dpdu = Vector3f{.0f, .0f, .0f};
+  if (!solveLinearSystem2x2(A, By, &dpdv[1], &dpdv[1]))
+    dpdv = Vector3f{.0f, .0f, .0f};
+  if (!solveLinearSystem2x2(A, Bz, &dpdu[2], &dpdv[2]))
+    dpdu = Vector3f{.0f, .0f, .0f};
+  intersection->dpdu = dpdu;
+  intersection->dpdv = dpdv;
 }
 
 void TriangleMesh::initInternalAcceleration() {

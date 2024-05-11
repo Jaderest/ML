@@ -62,7 +62,6 @@ public:
     }
 
     // 开始加权
-    // logn的算法
     float r = areas.back() * sample[0];
     int primID = std::lower_bound(areas.begin(), areas.end(), r) - areas.begin();
 
