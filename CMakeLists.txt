@@ -52,6 +52,7 @@ add_executable(Moer
   src/FunctionLayer/Texture/ImageTexture.cpp
   src/FunctionLayer/Texture/Texture.cpp
   src/FunctionLayer/Texture/Mipmap.cpp
+  src/FunctionLayer/Texture/WoodTexture.cpp
   src/FunctionLayer/Material/Matte.cpp
   src/FunctionLayer/Material/Mirror.cpp
   src/FunctionLayer/Material/Material.cpp

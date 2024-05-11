@@ -38,7 +38,7 @@ public:
   virtual TReturn evaluate(const TextureCoord &texCoord) const = 0;
 
 public:
-  Vector2i size;
+  Vector2i size; // 纹理大小，用于纹理坐标到像素坐标的转换
 
 protected:
   std::shared_ptr<TextureMapping> mapping;

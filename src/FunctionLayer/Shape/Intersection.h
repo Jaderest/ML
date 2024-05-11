@@ -7,7 +7,7 @@ class Shape;
 //* Ray与Shape交点处的信息
 struct Intersection {
   float distance;              // 从光线起点到交点的距离
-  Point3f position;            // 交点的位置
+  Point3f position;            // 交点的位置（世界坐标系）
   Vector3f normal;             // 交点处的法线
   Vector3f tangent, bitangent; // 交点处的切线和副切线
   Vector2f texCoord;           // 交点处的纹理坐标
@@ -77,7 +77,7 @@ inline void computeRayDifferentials(Intersection *intersection,
       float dudx, dvdx, dudy, dvdy;
       if (!solveLinearSystem2x2(A, Bx, &dudx, &dvdx))
         dudx = dvdx = .0f;
-      if (!solveLinearSystem2x2(A, Bx, &dudy, &dvdy))
+      if (!solveLinearSystem2x2(A, By, &dudy, &dvdy))
         dudy = dvdy = .0f;
 
       intersection->dudx = dudx;
