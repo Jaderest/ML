@@ -1,6 +1,6 @@
 {
   "output" : {
-    "filename" : "bunny_texture.hdr"
+    "filename" : "bunny_texture_box34.hdr"
   },
   "sampler" : {
     "type" : "independent",

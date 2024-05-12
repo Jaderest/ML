@@ -1,8 +1,8 @@
 #include "Texture.h"
 
 TextureCoord UVMapping::map(const Intersection &intersection) const {
-  // Point3f hitpoint = intersection.position;
-  // Vector3f p = normalize(hitpoint - Point3f{0.f, 0.f, 0.f}); //这里的p是单位向量
+  Point3f hitpoint = intersection.position;
+  Vector3f p = normalize(hitpoint - Point3f{0.f, 0.f, 0.f}); //这里的p是单位向量
   float u = intersection.texCoord[0];
   float v = intersection.texCoord[1];
 
@@ -20,14 +20,14 @@ TextureCoord UVMapping::map(const Intersection &intersection) const {
   // else
   //   v = p[2] + 1;
 
-  // Vector3f alpha = {1, 0, 0};
-  // Vector3f beta = {0, 1, 0};
+  Vector3f alpha = {cos(M_PI/3), sin(M_PI/3), 0};
+  Vector3f beta = {cos(M_PI/4), sin(M_PI/4), 0};
 
-  // p = hitpoint - Point3f{0.f, 0.f, 0.f};
-  // u = dot(p, alpha);
-  // v = dot(p, beta);
-  // u = u - floor(u);
-  // v = v - floor(v);
+  p = hitpoint - Point3f{0.f, 0.f, 0.f};
+  u = dot(p, alpha);
+  v = dot(p, beta);
+  u = u - floor(u);
+  v = v - floor(v);
 
   assert(u >= 0);
   assert(u <= 1);

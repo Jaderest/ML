@@ -35,7 +35,7 @@
           "type" : "matte",
           "albedo" : {
             "type" : "imageTex",
-            "file" : "images/pattern_new.png"
+            "file" : "images/pattern.jpg"
           }
         }
       }   

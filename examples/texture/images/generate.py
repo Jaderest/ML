@@ -6,6 +6,6 @@ import numpy as np
 # image = image * 1.2
 # cv.imwrite("const.hdr",image)
 
-img = cv.imread("pattern_big.png")
+img = cv.imread("/home/jaderest/Moer-lite/examples/texture/images/pattern_big.png")
 img =np.resize(img,[4096,4096,3])
-cv.imwrite("pattern_new.png",img)
+cv.imwrite("/home/jaderest/Moer-lite/examples/texture/images/pattern_new_big.png",img)
