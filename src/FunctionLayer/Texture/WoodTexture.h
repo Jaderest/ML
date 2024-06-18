@@ -4,7 +4,7 @@
 #include "Texture.h"
 #include <CoreLayer/ColorSpace/Spectrum.h>
 
-#define SIZE 8
+#define SIZE 5
 
 class WoodTexture : public Texture<Spectrum> { // 继承texture类
 public:

@@ -4,11 +4,15 @@
 
 WoodTexture::WoodTexture(const Json &json) : Texture<Spectrum>() {
   // 给出的示例场景中，json文件并不包含额外的域；你可以自行添加
-  srand(114514);
+  srand(233);
   if (this->grid[0][0] == 0.f) {
     for (int i = 0; i < SIZE; ++i) {
       for (int j = 0; j < SIZE; ++j) {
         this->grid[i][j] = ((double)rand() / RAND_MAX) * 2 * M_PI;
+        this->grid[i][j] = this->grid[i][j] * (i + j);
+        while (this->grid[i][j] > 2 * M_PI) {
+          this->grid[i][j] -= 2 * M_PI;
+        }
       }
     }
   }
@@ -47,7 +51,8 @@ Spectrum WoodTexture::evaluate(const TextureCoord &texCoord) const {
   Vector2f uv = texCoord.coord;
   float f = perlinNoise(uv);
   Spectrum woodColor = SpectrumRGB(164.f / 255, 116.f / 255, 73.f / 255);
-  woodColor = woodColor * (f * 5 - std::floor(f * 5));
+  float f1 = 10 * f - floor(10 * f);
+  woodColor = woodColor * (6 * pow(f1, 5) - 15 * pow(f1, 4) + 10 * pow(f1, 3));
   return woodColor;
 }
 
