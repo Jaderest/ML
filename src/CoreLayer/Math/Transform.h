@@ -45,8 +45,6 @@ public:
 
   Transformable(const Transform &_transform) : transform(_transform) {}
 
-  //* 对该对象应用一个transform变换
-  // TODO
   virtual void apply(const Transform &_transform){};
 
 protected:
