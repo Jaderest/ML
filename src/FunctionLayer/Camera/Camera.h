@@ -11,6 +11,8 @@ struct CameraSample {
   float time;
 };
 
+// film: 画布，即宽高
+
 //* 所有相机的基类
 class Camera : public Transformable {
 public:
@@ -41,6 +43,7 @@ protected:
 //* 透视相机使得渲染出的图片拥有近大远小的特点
 //* 创建一个透视相机需要指定相机的位置、指向的点以及向上方向
 //* 透视相机还可以分为针孔相机、薄透镜相机两种，因此透视相机仍然是一个抽象类
+//* 此处添加一个镜头组相机
 class PerspectiveCamera : public Camera {
 public:
   PerspectiveCamera() = delete;

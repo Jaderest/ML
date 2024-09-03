@@ -1,23 +1,26 @@
-#include "Pinhole.h"
+#include "LensCamera.h"
 
-PinholeCamera::PinholeCamera(const Json &json) : PerspectiveCamera(json) {}
+LensCamera::LensCamera(const Json &json) : PerspectiveCamera(json) {}
 
-Ray PinholeCamera::sampleRay(const CameraSample &sample, Vector2f NDC) const {
+Ray LensCamera::sampleRay(const CameraSample &sample, Vector2f NDC) const {
   float x = (NDC[0] - 0.5f) * film->size[0] + sample.xy[0],
         y = (0.5f - NDC[1]) * film->size[1] + sample.xy[1];
 
   float tanHalfFov = fm::tan(verticalFov * 0.5f);
   float z = -film->size[1] * 0.5f / tanHalfFov;
 
-  Vector3f direction = Vector3f{x, y, z};
+  Vector3f direction = Vector3f{1000, y, z};
   direction = normalize(transform.toWorld(direction));
   Point3f origin = transform.toWorld(Point3f(0));
 
-  // TODO 如果要实现动态模糊，那么此处需要根据sample中的time采样一个时间
+  // TODO: 实现最终透镜组出去的效果，所有计算都应该在这里完成
+  // 透镜组直接在这里指定
+
   return Ray(origin, direction, tNear, tFar, timeStart);
+  return Ray();
 }
 
-Ray PinholeCamera::sampleRayDifferentials(const CameraSample &sample,
+Ray LensCamera::sampleRayDifferentials(const CameraSample &sample,
                                           Vector2f NDC) const {
   float x = (NDC[0] - 0.5f) * film->size[0] + sample.xy[0],
         y = (0.5f - NDC[1]) * film->size[1] + sample.xy[1];
@@ -30,6 +33,8 @@ Ray PinholeCamera::sampleRayDifferentials(const CameraSample &sample,
            directionY = normalize(transform.toWorld(Vector3f{x, y + 1.f, z}));
   Point3f origin = transform.toWorld(Point3f(0));
 
+  // 要实现相应的光线微分
+  // TODO 如果要实现动态模糊，那么此处需要根据sample中的time采样一个时间
   Ray ret = Ray(origin, direction, tNear, tFar, timeStart);
 
   ret.hasDifferentials = true;
@@ -39,4 +44,4 @@ Ray PinholeCamera::sampleRayDifferentials(const CameraSample &sample,
   return ret;
 }
 
-REGISTER_CLASS(PinholeCamera, "pinhole")
+REGISTER_CLASS(LensCamera, "LensCamera")
